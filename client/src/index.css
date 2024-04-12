@@ -1,5 +1,14 @@
-@import "tailwindcss/base";
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
-@import "tailwindcss/components";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@import "tailwindcss/utilities";
+* > *{
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background: #dcdce6;
+    background-image: url('./assets/Background.png');
+}
