@@ -33,66 +33,105 @@ export async function verifyUser(req, res, next){
   "profile": ""
 }
 */
-export async function register(req,res){
+// export async function register(req,res){
 
-    try {
-        const { username, password, profile, email } = req.body;        
+//     try {
+//         const { username, password, profile, email } = req.body;        
 
-        // check the existing user
-        const existUsername = new Promise((resolve, reject) => {
-            UserModel.findOne({ username }, function(err, user){
-                if(err) reject(new Error(err))
-                if(user) reject({ error : "Please use unique username"});
-
-                
-            })
-        });
-
-        // check for existing email
-        const existEmail = new Promise((resolve, reject) => {
-            UserModel.findOne({ email }, function(err, email){
-                if(err) reject(new Error(err))
-                if(email) reject({ error : "Please use unique Email"});
+//         // check the existing user
+//         const existUsername = new Promise((resolve, reject) => {
+//             UserModel.findOne({ username }, function(err, user){
+//                 if(err) reject(new Error(err))
+//                 if(user) reject({ error : "Please use unique username"});
 
                 
-            })
-        });
+//             })
+//         });
+
+//         // check for existing email
+//         const existEmail = new Promise((resolve, reject) => {
+//             UserModel.findOne({ email }, function(err, email){
+//                 if(err) reject(new Error(err))
+//                 if(email) reject({ error : "Please use unique Email"});
+
+                
+//             })
+//         });
 
 
-        Promise.all([existUsername, existEmail])
-            .then(() => {
-                if(password){
-                    bcrypt.hash(password, 10)
-                        .then( hashedPassword => {
+//         Promise.all([existUsername, existEmail])
+//             .then(() => {
+//                 if(password){
+//                     bcrypt.hash(password, 10)
+//                         .then( hashedPassword => {
                             
-                            const user = new UserModel({
-                                username,
-                                password: hashedPassword,
-                                profile: profile || '',
-                                email
-                            });
+//                             const user = new UserModel({
+//                                 username,
+//                                 password: hashedPassword,
+//                                 profile: profile || '',
+//                                 email
+//                             });
 
-                            // return save result as a response
-                            user.save()
-                                .then(result => res.status(201).send({ msg: "User Register Successfully"}))
-                                .catch(error => res.status(500).send({error}))
+//                             // return save result as a response
+//                             user.save()
+//                                 .then(result => res.status(201).send({ msg: "User Register Successfully"}))
+//                                 .catch(error => res.status(500).send({error}))
 
-                        }).catch(error => {
-                            return res.status(500).send({
-                                error : "Enable to hashed password"
-                            })
-                        })
-                }
-            }).catch(error => {
-                return res.status(500).send({ error })
-            })
+                           
+//                         }).catch(error => {
+//                             return res.status(500).send({
+//                                 error : "Enable to hashed password"
+//                             })
+//                         })
+//                 }
+//             }).catch(error => {
+//                 return res.status(500).send({ error })
+//             })
 
 
+//     } catch (error) {
+//         return res.status(500).send(error);
+//     }
+
+// }
+
+export async function register(req, res) {
+    try {
+        const { username, password, profile, email } = req.body;
+
+        // Check for existing username
+        const existingUsername = await UserModel.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).send({ error: "Please use a unique username" });
+        }
+
+        // Check for existing email
+        const existingEmail = await UserModel.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).send({ error: "Please use a unique email" });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create and save the user
+        const user = new UserModel({
+            username,
+            password: hashedPassword,
+            profile: profile || '',
+            email
+        });
+
+        const savedUser = await user.save();
+
+        // Send success response
+        res.status(201).send({ msg: "User registered successfully" });
     } catch (error) {
-        return res.status(500).send(error);
+        console.error("Registration error:", error);
+        res.status(500).send({ error: "Internal server error" });
     }
-
 }
+
 
 
 /** POST: http://localhost:8080/api/login 
@@ -178,30 +217,47 @@ body: {
     profile : ''
 }
 */
-export async function updateUser(req,res){
-    try {
+// export async function updateUser(req,res){
+//     try {
         
-        // const id = req.query.id;
+//         // const id = req.query.id;
+//         const { userId } = req.user;
+
+//         if(userId){
+//             const body = req.body;
+
+//             // update the data
+//             UserModel.updateOne({ _id : userId }, body, function(err, data){
+//                 if(err) throw err;
+
+//                 return res.status(201).send({ msg : "Record Updated...!"});
+//             })
+
+//         }else{
+//             return res.status(401).send({ error : "User Not Found...!"});
+//         }
+
+//     } catch (error) {
+//         return res.status(401).send({ error });
+//     }
+// }
+
+export async function updateUser(req, res) {
+    try {
         const { userId } = req.user;
-
-        if(userId){
-            const body = req.body;
-
-            // update the data
-            UserModel.updateOne({ _id : userId }, body, function(err, data){
-                if(err) throw err;
-
-                return res.status(201).send({ msg : "Record Updated...!"});
-            })
-
-        }else{
-            return res.status(401).send({ error : "User Not Found...!"});
+        if (!userId) {
+            return res.status(401).send({ error: "User not found" });
         }
 
+        const body = req.body;
+        const result = await UserModel.updateOne({ _id: userId }, body);
+        return res.status(201).send({ msg: "Record updated" });
     } catch (error) {
-        return res.status(401).send({ error });
+        console.error("Update user error:", error);
+        return res.status(500).send({ error: "Internal server error" });
     }
 }
+
 
 
 /** GET: http://localhost:8080/api/generateOTP */

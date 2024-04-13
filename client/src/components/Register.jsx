@@ -17,9 +17,9 @@ export default function Register() {
 
   const formik = useFormik({
     initialValues : {
-      email: 'doyol56239@cnogs.com',
-      username: 'example123',
-      password : 'admin@123'
+      email: '',
+      username: '',
+      password : ''
     },
     validate : registerValidation,
     validateOnBlur: false,
@@ -64,13 +64,13 @@ export default function Register() {
                     <img src={file || avatar} className={styles.profile_img} alt="avatar" />
                   </label>
                   
-                  <input onChange={onUpload} type="file" id='profile' name='profile' />
+                  <input onChange={onUpload} type="file" id='profile' name='profile' autoComplete='off'/>
               </div>
 
               <div className="textbox flex flex-col items-center gap-6">
-                  <input {...formik.getFieldProps('email')} className={styles.textbox} type="text" placeholder='Email*' />
-                  <input {...formik.getFieldProps('username')} className={styles.textbox} type="text" placeholder='Username*' />
-                  <input {...formik.getFieldProps('password')} className={styles.textbox} type="text" placeholder='Password*' />
+                  <input {...formik.getFieldProps('email')} className={styles.textbox} type="text" placeholder='Email*' autoComplete='off'/>
+                  <input {...formik.getFieldProps('username')} className={styles.textbox} type="text" placeholder='Username*' autoComplete='off'/>
+                  <input {...formik.getFieldProps('password')} className={styles.textbox} type="password" placeholder='Password*' autoComplete='off'/>
                   <button className={styles.btn} type='submit'>Register</button>
               </div>
 

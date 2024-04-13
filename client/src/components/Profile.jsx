@@ -62,7 +62,7 @@ export default function Profile() {
 
       <Toaster position='top-center' reverseOrder={false}></Toaster>
 
-      <div className='flex justify-center items-center h-screen'>
+      <div className='flex justify-center items-center mt-4 h-auto'>
         <div className={`${styles.glass} ${extend.glass}`} style={{ width: "45%", paddingTop: '3em'}}>
 
           <div className="title flex flex-col items-center">
@@ -83,17 +83,17 @@ export default function Profile() {
 
               <div className="textbox flex flex-col items-center gap-6">
                 <div className="name flex w-3/4 gap-10">
-                  <input {...formik.getFieldProps('firstName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='FirstName' />
-                  <input {...formik.getFieldProps('lastName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='LastName' />
+                  <input {...formik.getFieldProps('firstName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='FirstName' autoComplete='off'/>
+                  <input {...formik.getFieldProps('lastName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='LastName'autoComplete='off' />
                 </div>
 
                 <div className="name flex w-3/4 gap-10">
-                  <input {...formik.getFieldProps('mobile')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Mobile No.' />
-                  <input {...formik.getFieldProps('email')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Email*' />
+                  <input {...formik.getFieldProps('mobile')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Mobile No.' autoComplete='off'/>
+                  <input {...formik.getFieldProps('email')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Email*' autoComplete='off'/>
                 </div>
 
                
-                  <input {...formik.getFieldProps('address')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Address' />
+                  <input {...formik.getFieldProps('address')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Address' autoComplete='off'/>
                   <button className={styles.btn} type='submit'>Update</button>
                
                   
