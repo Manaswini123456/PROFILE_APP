@@ -9,11 +9,15 @@ const app = express();
 
 /** middlewares */
 app.use(express.json());
-app.use(cors());
+// Set CORS options to allow requests from http://localhost:3000
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(morgan('tiny'));
 app.disable('x-powered-by'); // less hackers know about our stack
-
 
 const port = 8080;
 
@@ -22,17 +26,13 @@ app.get('/', (req, res) => {
     res.status(201).json("Home GET Request");
 });
 
-app.use('/api', router)
+app.use('/api', router);
 
 /** start server only when we have valid connection */
 connect().then(() => {
-    try {
-        app.listen(port, () => {
-            console.log(`Server connected to http://localhost:${port}`);
-        })
-    } catch (error) {
-        console.log('Cannot connect to the server')
-    }
+    app.listen(port, () => {
+        console.log(`Server connected to http://localhost:${port}`);
+    });
 }).catch(error => {
     console.log("Invalid database connection...!");
-})
+});
