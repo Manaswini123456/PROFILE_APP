@@ -1,10 +1,12 @@
 import nodemailer from 'nodemailer';
 import Mailgen from 'mailgen';
-
 import config from '../config.js';
 
+// Function to generate a random OTP
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit OTP
+}
 
-// https://ethereal.email/create
 let nodeConfig = {
     host: "smtp.ethereal.email",
     port: 587,
@@ -19,46 +21,41 @@ let transporter = nodemailer.createTransport(nodeConfig);
 
 let MailGenerator = new Mailgen({
     theme: "default",
-    product : {
+    product: {
         name: "Mailgen",
         link: 'https://mailgen.js/'
     }
-})
+});
 
-/** POST: http://localhost:8080/api/registerMail 
- * @param: {
-  "username" : "example123",
-  "userEmail" : "admin123",
-  "text" : "",
-  "subject" : "",
-}
-*/
 export const registerMail = async (req, res) => {
     const { username, userEmail, text, subject } = req.body;
 
-    // body of the email
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Body of the email
     var email = {
-        body : {
+        body: {
             name: username,
-            intro : text || 'Welcome to Daily Tuition! We\'re very excited to have you on board.',
-            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+            intro: text || 'Welcome to Daily Tuition! We\'re very excited to have you on board.',
+            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.',
+            otp: `Your One-Time Password (OTP): ${otp}` // Include OTP in the email
         }
-    }
+    };
 
     var emailBody = MailGenerator.generate(email);
 
     let message = {
-        from : config.EMAIL,
-        to: userEmail,
-        subject : subject || "Signup Successful",
-        html : emailBody
-    }
+        from: '"Ethereal Email" <noreply@ethereal.email>', // Ethereal email address
+        to: userEmail, // User's provided email address
+        subject: subject || "Signup Successful",
+        html: emailBody
+    };
 
-    // send mail
+    // Send mail
     transporter.sendMail(message)
         .then(() => {
-            return res.status(200).send({ msg: "You should receive an email from us."})
+            return res.status(200).send({ msg: "You should receive an email from us." })
         })
-        .catch(error => res.status(500).send({ error }))
-
-}
+        .catch(error => res.status(500).send({ error }));
+};
