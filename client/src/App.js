@@ -15,6 +15,8 @@ import PageNotFound from './components/PageNotFound';
 /** auth middleware */
 import { AuthorizeUser, ProtectRoute } from './middleware/auth'
 
+import Options from './components/Options';
+
 /** root routes */
 const router = createBrowserRouter([
     {
@@ -45,6 +47,12 @@ const router = createBrowserRouter([
         path : '*',
         element : <PageNotFound></PageNotFound>
     },
+    
+    {
+        path:'/options',
+        element:<AuthorizeUser><Options></Options></AuthorizeUser>
+
+    }
 ])
 
 export default function App() {

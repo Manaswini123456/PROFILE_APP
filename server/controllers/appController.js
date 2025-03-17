@@ -4,11 +4,12 @@ import jwt from 'jsonwebtoken';
 import config from '../config.js'
 import otpGenerator from 'otp-generator';
 
+
 /** middleware for verify user */
 export async function verifyUser(req, res, next){
     try {
         
-        const { username } = req.method == "GET" ? req.query : req.body;
+        const { username } = req.method === "GET" ? req.query : req.body;
 
         // check the user existance
         let exist = await UserModel.findOne({ username });

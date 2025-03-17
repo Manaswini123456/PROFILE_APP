@@ -27,4 +27,5 @@ router.route('/resetPassword').put(controller.verifyUser, controller.resetPasswo
 
 
 
+
 export default router;

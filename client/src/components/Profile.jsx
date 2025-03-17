@@ -47,6 +47,10 @@ export default function Profile() {
     const base64 = await convertToBase64(e.target.files[0]);
     setFile(base64);
   }
+  
+  const GoBack = () => {
+    navigate('/options')
+  }
 
   // logout handler function
   function userLogout(){
@@ -96,7 +100,8 @@ export default function Profile() {
                   <input {...formik.getFieldProps('address')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Address' autoComplete='off'/>
                   <button className={styles.btn} type='submit'>Update</button>
                
-                  
+                  OR
+                  <button className={styles.btn} type='button' onClick={GoBack}>Go Back</button>
               </div>
 
               <div className="text-center py-4">
