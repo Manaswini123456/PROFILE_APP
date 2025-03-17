@@ -259,6 +259,37 @@ export async function updateUser(req, res) {
     }
 }
 
+export async function getPublicProfile(req, res) {
+    try {
+        const { username } = req.params;
+
+        console.log("Fetching profile for:", username); // Debugging Log
+
+        // Check if the username exists in the request
+        if (!username) {
+            console.log("Username not provided");
+            return res.status(400).json({ error: "Username is required" });
+        }
+
+        // Fetch user but exclude sensitive fields
+        const user = await UserModel.findOne({ username }).select("profile firstName lastName username address email");
+
+        // If no user is found, return 404
+        if (!user) {
+            console.log("User not found:", username);
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error fetching public profile:", error); // Print Full Error
+        res.status(500).json({ 
+            error: "Internal Server Error", 
+            details: error.message 
+        });
+    }
+}
+
 
 
 /** GET: http://localhost:8080/api/generateOTP */

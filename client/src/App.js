@@ -16,6 +16,7 @@ import PageNotFound from './components/PageNotFound';
 import { AuthorizeUser, ProtectRoute } from './middleware/auth'
 
 import Options from './components/Options';
+import Public from './components/Public';
 
 /** root routes */
 const router = createBrowserRouter([
@@ -52,7 +53,12 @@ const router = createBrowserRouter([
         path:'/options',
         element:<AuthorizeUser><Options></Options></AuthorizeUser>
 
+    },
+    {
+        path: "/profile/public/:username", 
+        element: <AuthorizeUser><Public /></AuthorizeUser>
     }
+    
 ])
 
 export default function App() {

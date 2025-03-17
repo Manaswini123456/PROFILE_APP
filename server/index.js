@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import connect from './database/conn.js';
 import router from './router/route.js';
 import bodyParser from 'body-parser';
-import productRoutes from './router/Product.js';
 
 const app = express();
 
@@ -18,7 +17,6 @@ app.disable('x-powered-by');
 
 // Routes
 app.use('/api', router);
-app.use('/api/products', productRoutes); // This is where your product routes should be mounted
 
 const port = 8080;
 

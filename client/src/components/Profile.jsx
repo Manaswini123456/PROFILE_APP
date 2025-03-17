@@ -1,117 +1,166 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import avatar from '../assets/profile.png';
 import toast, { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { profileValidation } from '../helper/validate';
 import convertToBase64 from '../helper/convert';
 import useFetch from '../hooks/fetch.hook';
-import { updateUser } from '../helper/helper'
-import { useNavigate } from 'react-router-dom'
+import { updateUser } from '../helper/helper';
+import { useNavigate } from 'react-router-dom';
 
 import styles from '../styles/Username.module.css';
-import extend from '../styles/Profile.module.css'
+import extend from '../styles/Profile.module.css';
 
 export default function Profile() {
-
   const [file, setFile] = useState();
   const [{ isLoading, apiData, serverError }] = useFetch();
-  const navigate = useNavigate()
- 
+  const navigate = useNavigate();
+
   const formik = useFormik({
-    initialValues : {
-      firstName : apiData?.firstName || '',
+    initialValues: {
+      firstName: apiData?.firstName || '',
       lastName: apiData?.lastName || '',
       email: apiData?.email || '',
       mobile: apiData?.mobile || '',
-      address : apiData?.address || ''
+      address: apiData?.address || ''
     },
     enableReinitialize: true,
-    validate : profileValidation,
+    validate: profileValidation,
     validateOnBlur: false,
     validateOnChange: false,
-    onSubmit : async values => {
-      values = await Object.assign(values, { profile : file || apiData?.profile || ''})
+    onSubmit: async (values) => {
+      values = await Object.assign(values, { profile: file || apiData?.profile || '' });
       let updatePromise = updateUser(values);
 
       toast.promise(updatePromise, {
         loading: 'Updating...',
-        success : <b>Update Successfully...!</b>,
-        error: <b>Could not Update!</b>
+        success: <b>Updated Successfully! 🎉</b>,
+        error: <b>Update Failed! ❌</b>
       });
-
     }
-  })
+  });
 
-  /** formik doensn't support file upload so we need to create this handler */
-  const onUpload = async e => {
+  /** Handles file upload */
+  const onUpload = async (e) => {
     const base64 = await convertToBase64(e.target.files[0]);
     setFile(base64);
-  }
-  
-  const GoBack = () => {
-    navigate('/options')
-  }
+  };
 
-  // logout handler function
-  function userLogout(){
+  const GoBack = () => navigate('/options');
+
+  // Logout function
+  function userLogout() {
     localStorage.removeItem('token');
-    navigate('/')
+    navigate('/');
   }
 
-  if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>;
-  if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
+  if (isLoading) return <h1 className="text-2xl font-bold text-center">Loading...</h1>;
+  if (serverError) return <h1 className="text-xl text-red-500 text-center">{serverError.message}</h1>;
 
   return (
-    <div className="container mx-auto">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <Toaster position="top-center" reverseOrder={false} />
+      <div className="bg-white shadow-xl rounded-lg p-8 w-[40%] text-center">
+        
+        {/* Profile Header */}
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Profile</h2>
+        <p className="text-gray-500 text-sm mb-6">You can update your details here.</p>
 
-      <Toaster position='top-center' reverseOrder={false}></Toaster>
+        {/* Profile Image Upload */}
+        <div className="flex flex-col items-center mb-6">
+          <label htmlFor="profile" className="cursor-pointer">
+            <img
+              src={apiData?.profile || file || avatar}
+              className="w-24 h-24 rounded-full border-4 border-gray-300 hover:opacity-80 transition"
+              alt="User Avatar"
+            />
+          </label>
+          <input
+            onChange={onUpload}
+            type="file"
+            id="profile"
+            name="profile"
+            className="hidden"
+          />
+        </div>
 
-      <div className='flex justify-center items-center mt-4 h-auto'>
-        <div className={`${styles.glass} ${extend.glass}`} style={{ width: "45%", paddingTop: '3em'}}>
-
-          <div className="title flex flex-col items-center">
-            <h4 className='text-5xl font-bold'>Profile</h4>
-            <span className='py-4 text-xl w-2/3 text-center text-gray-500'>
-                You can update the details.
-            </span>
+        {/* Form */}
+        <form onSubmit={formik.handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              {...formik.getFieldProps('firstName')}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              type="text"
+              placeholder="First Name"
+              autoComplete="off"
+            />
+            <input
+              {...formik.getFieldProps('lastName')}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              type="text"
+              placeholder="Last Name"
+              autoComplete="off"
+            />
           </div>
 
-          <form className='py-1' onSubmit={formik.handleSubmit}>
-              <div className='profile flex justify-center py-4'>
-                  <label htmlFor="profile">
-                    <img src={apiData?.profile || file || avatar} className={`${styles.profile_img} ${extend.profile_img}`} alt="avatar" />
-                  </label>
-                  
-                  <input onChange={onUpload} type="file" id='profile' name='profile' />
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              {...formik.getFieldProps('mobile')}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              type="text"
+              placeholder="Mobile No."
+              autoComplete="off"
+            />
+            <input
+              {...formik.getFieldProps('email')}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              type="text"
+              placeholder="Email*"
+              autoComplete="off"
+            />
+          </div>
 
-              <div className="textbox flex flex-col items-center gap-6">
-                <div className="name flex w-3/4 gap-10">
-                  <input {...formik.getFieldProps('firstName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='FirstName' autoComplete='off'/>
-                  <input {...formik.getFieldProps('lastName')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='LastName'autoComplete='off' />
-                </div>
+          <input
+            {...formik.getFieldProps('address')}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+            type="text"
+            placeholder="Address"
+            autoComplete="off"
+          />
 
-                <div className="name flex w-3/4 gap-10">
-                  <input {...formik.getFieldProps('mobile')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Mobile No.' autoComplete='off'/>
-                  <input {...formik.getFieldProps('email')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Email*' autoComplete='off'/>
-                </div>
+          {/* Buttons */}
+          <div className="flex flex-col items-center gap-3">
+            <button
+              className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition"
+              type="submit"
+            >
+              Update
+            </button>
 
-               
-                  <input {...formik.getFieldProps('address')} className={`${styles.textbox} ${extend.textbox}`} type="text" placeholder='Address' autoComplete='off'/>
-                  <button className={styles.btn} type='submit'>Update</button>
-               
-                  OR
-                  <button className={styles.btn} type='button' onClick={GoBack}>Go Back</button>
-              </div>
+            <span className="text-gray-500">OR</span>
 
-              <div className="text-center py-4">
-                <span className='text-gray-500'>come back later? <button onClick={userLogout} className='text-red-500' to="/">Logout</button></span>
-              </div>
+            <button
+              className="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition"
+              type="button"
+              onClick={GoBack}
+            >
+              Go Back
+            </button>
 
-          </form>
-
-        </div>
+            <div className="text-center pt-4">
+              <span className="text-gray-500">
+                Want to leave?{' '}
+                <button
+                  onClick={userLogout}
+                  className="text-red-500 hover:text-red-700 font-semibold transition"
+                >
+                  Logout
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
-  )
+  );
 }
